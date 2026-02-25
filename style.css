@@ -155,6 +155,55 @@ header {
     /* Increased line-height to prevent clipping */
 }
 
+.fb-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px 0;
+    transition: var(--transition);
+}
+
+.status-icon {
+    font-size: 1.2rem;
+    filter: grayscale(1);
+    opacity: 0.5;
+    transition: all 0.3s ease;
+}
+
+.fb-status.online .status-icon {
+    filter: grayscale(0);
+    opacity: 1;
+    color: #10b981;
+    /* Green for connected */
+    animation: bounce 2s infinite ease-in-out;
+}
+
+.fb-status.offline .status-icon {
+    filter: grayscale(0);
+    opacity: 1;
+    color: #f59e0b;
+    /* Orange for offline/cache */
+}
+
+.fb-status.error .status-icon {
+    filter: grayscale(0);
+    opacity: 1;
+    color: #ef4444;
+    /* Red for error */
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-3px);
+    }
+}
+
 .logo p {
     color: var(--text-muted);
     font-size: 0.9rem;

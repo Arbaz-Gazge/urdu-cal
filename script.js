@@ -38,14 +38,29 @@ const firebaseConfig = {
     appId: "1:442481227799:web:913f767e23d00805c6c452"
 };
 
+const fbStatusEl = document.getElementById('fb-status');
+
+function setCloudStatus(state) {
+    fbStatusEl.classList.remove('online', 'offline', 'error');
+    if (state) fbStatusEl.classList.add(state);
+}
+
 // Initialize Firebase
 if (typeof firebase !== 'undefined') {
     firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore();
+
     // Enable offline persistence
-    db.enablePersistence().catch((err) => {
+    db.enablePersistence().then(() => {
+        setCloudStatus('offline'); // Started successfully with persistence
+    }).catch((err) => {
         console.warn("Persistence failed", err.code);
     });
+
+    // Watch for network status
+    window.addEventListener('online', () => setCloudStatus('online'));
+    window.addEventListener('offline', () => setCloudStatus('offline'));
+    if (navigator.onLine) setCloudStatus('online');
 }
 
 const monthSelect = document.getElementById('month-select');
@@ -361,6 +376,7 @@ function updatePrayerTimes() {
     // Then try to fetch from Firebase
     if (typeof db !== 'undefined') {
         db.collection("prayer_times").doc(dateKey).get().then((doc) => {
+            setCloudStatus('online');
             if (doc.exists) {
                 const firebaseOverrides = doc.data();
                 // Update local storage to match cloud
@@ -369,6 +385,7 @@ function updatePrayerTimes() {
             }
         }).catch((error) => {
             console.error("Error fetching from Firebase:", error);
+            setCloudStatus('error');
         });
     }
 }
@@ -588,9 +605,16 @@ pickerSave.addEventListener('click', () => {
 
     // Update Firebase
     if (typeof db !== 'undefined') {
+        setCloudStatus('offline'); // Set to offline while syncing
         db.collection("prayer_times").doc(dateKey).set(overrides, { merge: true })
-            .then(() => console.log("Success syncing with Cloud"))
-            .catch((err) => console.error("Cloud sync failed", err));
+            .then(() => {
+                console.log("Success syncing with Cloud");
+                setCloudStatus('online');
+            })
+            .catch((err) => {
+                console.error("Cloud sync failed", err);
+                setCloudStatus('error');
+            });
     }
 
     updatePrayerTimes();
