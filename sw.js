@@ -1,9 +1,9 @@
-const CACHE_NAME = 'urdu-cal-v1';
+const CACHE_NAME = 'urdu-cal-v2';
 const ASSETS = [
     './',
     './index.html',
     './style.css',
-    './script.js',
+    './script.js?v=2',
     './bg.png',
     './manifest.json'
 ];

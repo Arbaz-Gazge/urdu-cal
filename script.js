@@ -50,30 +50,32 @@ if (typeof firebase !== 'undefined') {
     firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore();
 
+    // Default state
+    setCloudStatus('offline');
+
     // Enable offline persistence
     db.enablePersistence().then(() => {
-        setCloudStatus('offline'); // Started successfully with persistence
+        console.log("Persistence enabled");
     }).catch((err) => {
         console.warn("Persistence failed", err.code);
     });
 
-    // Watch for real-time connection status from Firestore
-    db.collection("prayer_times").limit(1).onSnapshot(() => {
+    // Real-time connection feedback
+    db.collection("prayer_times").limit(1).onSnapshot((snap) => {
         setCloudStatus('online');
     }, (err) => {
+        console.error("Firestore Error:", err.code);
         if (err.code === 'permission-denied') {
             setCloudStatus('error');
-            console.error("Firebase Rules need to be updated!");
         } else {
             setCloudStatus('offline');
         }
     });
 
-    // Watch for network status fallback
-    window.addEventListener('online', () => {
-        if (fbStatusEl.classList.contains('offline')) setCloudStatus('online');
-    });
+    window.addEventListener('online', () => setCloudStatus('online'));
     window.addEventListener('offline', () => setCloudStatus('offline'));
+} else {
+    console.error("Firebase SDK not found!");
 }
 
 const monthSelect = document.getElementById('month-select');
