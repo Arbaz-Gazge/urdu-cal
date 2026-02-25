@@ -552,6 +552,48 @@ pickerCancel.addEventListener('click', () => {
     timePickerModal.classList.remove('active');
 });
 
+// Pull to Refresh Logic
+let startY = 0;
+const pullIndicator = document.getElementById('pull-to-refresh');
+const THRESHOLD = 150;
+
+window.addEventListener('touchstart', (e) => {
+    if (window.scrollY === 0) {
+        startY = e.touches[0].pageY;
+    }
+}, { passive: true });
+
+window.addEventListener('touchmove', (e) => {
+    if (window.scrollY === 0 && startY > 0) {
+        const currentY = e.touches[0].pageY;
+        const diff = currentY - startY;
+
+        if (diff > 0) {
+            const translate = Math.min(diff, THRESHOLD);
+            pullIndicator.style.transform = `translateY(${translate}px)`;
+
+            if (diff >= THRESHOLD) {
+                pullIndicator.querySelector('span').textContent = "Release to refresh";
+            } else {
+                pullIndicator.querySelector('span').textContent = "Pull to refresh";
+            }
+        }
+    }
+}, { passive: true });
+
+window.addEventListener('touchend', (e) => {
+    const endY = e.changedTouches[0].pageY;
+    const diff = endY - startY;
+
+    if (window.scrollY === 0 && diff >= THRESHOLD) {
+        pullIndicator.querySelector('span').textContent = "Refreshing...";
+        window.location.reload();
+    } else {
+        pullIndicator.style.transform = `translateY(0)`;
+    }
+    startY = 0;
+});
+
 // Initialize
 initSelectors();
 updateCalendar();
