@@ -57,10 +57,23 @@ if (typeof firebase !== 'undefined') {
         console.warn("Persistence failed", err.code);
     });
 
-    // Watch for network status
-    window.addEventListener('online', () => setCloudStatus('online'));
+    // Watch for real-time connection status from Firestore
+    db.collection("prayer_times").limit(1).onSnapshot(() => {
+        setCloudStatus('online');
+    }, (err) => {
+        if (err.code === 'permission-denied') {
+            setCloudStatus('error');
+            console.error("Firebase Rules need to be updated!");
+        } else {
+            setCloudStatus('offline');
+        }
+    });
+
+    // Watch for network status fallback
+    window.addEventListener('online', () => {
+        if (fbStatusEl.classList.contains('offline')) setCloudStatus('online');
+    });
     window.addEventListener('offline', () => setCloudStatus('offline'));
-    if (navigator.onLine) setCloudStatus('online');
 }
 
 const monthSelect = document.getElementById('month-select');
