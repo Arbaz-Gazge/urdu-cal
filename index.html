@@ -93,6 +93,17 @@
                     <!-- Festivals will appear here -->
                 </div>
 
+                <div class="tasks-container">
+                    <div class="tasks-header">
+                        <span data-en="Events / Tasks" data-ur="واقعات / کام">Events / Tasks</span>
+                        <button id="add-task-trigger" class="add-task-btn">+</button>
+                    </div>
+                    <div id="tasks-list" class="tasks-list">
+                        <!-- Tasks go here -->
+                        <p class="no-tasks">No tasks for this day.</p>
+                    </div>
+                </div>
+
                 <div class="namaz-container">
                     <div class="namaz-header">
                         <span data-en="Prayer Times (Mumbai)" data-ur="نماز کا وقت (ممبئی)">Prayer Times (Mumbai)</span>
@@ -143,6 +154,19 @@
             <div class="modal-actions">
                 <button id="picker-cancel" class="modal-btn secondary">Cancel</button>
                 <button id="picker-save" class="modal-btn primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="task-modal" class="modal">
+        <div class="modal-content">
+            <h4 id="task-modal-title">Add Event / Task</h4>
+            <div class="task-inputs">
+                <input type="text" id="task-input" placeholder="Enter task description..." maxlength="50">
+            </div>
+            <div class="modal-actions">
+                <button id="task-cancel" class="modal-btn secondary">Cancel</button>
+                <button id="task-save" class="modal-btn primary">Save</button>
             </div>
         </div>
     </div>

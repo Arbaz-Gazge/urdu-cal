@@ -75,9 +75,27 @@ if (typeof firebase !== 'undefined') {
 
     window.addEventListener('online', () => setCloudStatus('online'));
     window.addEventListener('offline', () => setCloudStatus('offline'));
+
+    // Real-time listener for tasks
+    db.collection("calendar_tasks").onSnapshot((snap) => {
+        tasksCache = {};
+        snap.forEach(doc => {
+            tasksCache[doc.id] = doc.data().tasks || [];
+        });
+        updateCalendar();
+        updateTasksList();
+    });
 } else {
     console.error("Firebase SDK not found!");
 }
+let tasksCache = {};
+const taskModal = document.getElementById('task-modal');
+const taskInput = document.getElementById('task-input');
+const taskSave = document.getElementById('task-save');
+const taskCancel = document.getElementById('task-cancel');
+const tasksList = document.getElementById('tasks-list');
+const tasksTitle = document.getElementById('tasks-title');
+const addTaskTrigger = document.getElementById('add-task-trigger');
 
 const monthSelect = document.getElementById('month-select');
 const yearSelect = document.getElementById('year-select');
@@ -252,6 +270,14 @@ function updateCalendar() {
             cell.classList.add('selected');
         }
 
+        // Task dot
+        const dateKey = `${year}-${(month + 1).toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
+        if (tasksCache[dateKey] && tasksCache[dateKey].length > 0) {
+            const dot = document.createElement('div');
+            dot.classList.add('task-dot');
+            cell.appendChild(dot);
+        }
+
         // Festival check for highlight
         const fest = getFestivalForDate(new Date(year, month, d));
         if (fest) {
@@ -368,6 +394,9 @@ function updateSideInfo() {
 
     // Update Prayer Times
     updatePrayerTimes();
+
+    // Update Tasks
+    updateTasksList();
 }
 
 function updatePrayerTimes() {
@@ -682,6 +711,91 @@ window.addEventListener('touchend', (e) => {
     }
     startY = 0;
 });
+
+function updateTasksList() {
+    const dateKey = selectedDate.toISOString().split('T')[0];
+    const monthIndex = selectedDate.getMonth();
+    const day = selectedDate.getDate();
+    const tasksTitle = document.getElementById('tasks-title');
+    const tasksList = document.getElementById('tasks-list');
+
+    if (tasksTitle) {
+        const monthName = translations[currentLang].months[monthIndex];
+        tasksTitle.textContent = currentLang === 'ur' ? `${monthName} ${day} کے کام` : `Tasks for ${monthName} ${day}`;
+    }
+
+    const tasks = tasksCache[dateKey] || [];
+    if (tasksList) {
+        tasksList.innerHTML = '';
+        if (tasks.length === 0) {
+            tasksList.innerHTML = `<p class="no-tasks">${currentLang === 'ur' ? 'آج کوئی کام نہیں ہے۔' : 'No tasks for this day.'}</p>`;
+            return;
+        }
+        tasks.forEach((task, index) => {
+            const item = document.createElement('div');
+            item.className = 'task-item';
+            item.innerHTML = `
+                <span class="task-text">${task}</span>
+                <span class="task-delete" onclick="deleteTask(${index})">🗑️</span>
+            `;
+            tasksList.appendChild(item);
+        });
+    }
+}
+
+if (addTaskTrigger) {
+    addTaskTrigger.addEventListener('click', () => {
+        if (taskInput) taskInput.value = '';
+        if (taskModal) taskModal.classList.add('active');
+        if (taskInput) taskInput.focus();
+    });
+}
+
+if (taskCancel) {
+    taskCancel.addEventListener('click', () => {
+        if (taskModal) taskModal.classList.remove('active');
+    });
+}
+
+if (taskSave) {
+    taskSave.addEventListener('click', () => {
+        const text = taskInput ? taskInput.value.trim() : '';
+        if (!text) return;
+
+        const dateKey = selectedDate.toISOString().split('T')[0];
+        const tasks = tasksCache[dateKey] || [];
+        tasks.push(text);
+
+        if (typeof db !== 'undefined') {
+            setCloudStatus('offline');
+            db.collection("calendar_tasks").doc(dateKey).set({ tasks: tasks })
+                .then(() => {
+                    setCloudStatus('online');
+                    if (taskModal) taskModal.classList.remove('active');
+                })
+                .catch(err => {
+                    console.error("Task sync failed", err);
+                    setCloudStatus('error');
+                });
+        }
+    });
+}
+
+window.deleteTask = function (index) {
+    const dateKey = selectedDate.toISOString().split('T')[0];
+    const tasks = tasksCache[dateKey] || [];
+    tasks.splice(index, 1);
+
+    if (typeof db !== 'undefined') {
+        setCloudStatus('offline');
+        db.collection("calendar_tasks").doc(dateKey).set({ tasks: tasks })
+            .then(() => setCloudStatus('online'))
+            .catch(err => {
+                console.error("Task delete failed", err);
+                setCloudStatus('error');
+            });
+    }
+};
 
 // Initialize
 initSelectors();

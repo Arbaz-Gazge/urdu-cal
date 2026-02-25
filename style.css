@@ -214,6 +214,117 @@ header {
     }
 }
 
+.day {
+    position: relative;
+}
+
+.task-dot {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background: var(--primary-color);
+    border-radius: 50%;
+}
+
+.tasks-container {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: rgba(6, 78, 59, 0.03);
+    border-radius: 12px;
+}
+
+.tasks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.tasks-header span {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+}
+
+.add-task-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.add-task-btn:hover {
+    transform: scale(1.1);
+    background: var(--secondary-color);
+}
+
+.tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.task-item {
+    background: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.task-text {
+    color: var(--text-color);
+}
+
+.task-delete {
+    color: #ef4444;
+    font-size: 0.8rem;
+    cursor: pointer;
+    padding: 4px;
+    opacity: 0.6;
+    transition: var(--transition);
+}
+
+.task-delete:hover {
+    opacity: 1;
+}
+
+.no-tasks {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 10px 0;
+}
+
+.task-inputs input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    margin: 1rem 0;
+    outline: none;
+    font-size: 1rem;
+}
+
+.task-inputs input:focus {
+    border-color: var(--primary-color);
+}
+
 .logo p {
     color: var(--text-muted);
     font-size: 0.9rem;
