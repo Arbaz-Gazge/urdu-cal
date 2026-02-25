@@ -98,6 +98,7 @@ body::before {
     /* Force mobile-like width on desktop */
     background: var(--card-bg);
     backdrop-filter: blur(15px);
+    position: relative;
     border-radius: var(--border-radius);
     box-shadow: var(--glass-shadow);
     padding: 1.5rem;
@@ -156,10 +157,19 @@ header {
 }
 
 .fb-status {
-    display: inline-flex;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: white;
+    padding: 6px;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
     align-items: center;
     justify-content: center;
-    margin: 5px 0;
+    z-index: 100;
+    width: 35px;
+    height: 35px;
     transition: var(--transition);
 }
 
