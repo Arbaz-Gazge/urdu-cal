@@ -30,12 +30,12 @@ const MUMBAI_TZ = 5.5;
 
 // Firebase Configuration (Using your existing project config)
 const firebaseConfig = {
-    apiKey: "AIzaSyB7YJYlnqqbV17qhBLfnIWkw0Rl507HTeM",
+    apiKey: "AIzaSyB4hPx9yV78yujtAyUdmB8LnsJ5bkm2DWE",
     authDomain: "managment-48849.firebaseapp.com",
     projectId: "managment-48849",
     storageBucket: "managment-48849.firebasestorage.app",
     messagingSenderId: "442481227799",
-    appId: "1:442481227799:web:913f767e23d00805c6c452"
+    appId: "1:442481227799:web:013303dc0d088a19c6c452"
 };
 
 const fbStatusEl = document.getElementById('fb-status');
