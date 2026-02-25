@@ -48,7 +48,8 @@ function setCloudStatus(state) {
 // Initialize Firebase
 if (typeof firebase !== 'undefined') {
     firebase.initializeApp(firebaseConfig);
-    var db = firebase.firestore();
+    window.db = firebase.firestore();
+    setCloudStatus('offline');
 
     // Default state
     setCloudStatus('offline');
