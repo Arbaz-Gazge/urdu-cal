@@ -28,6 +28,26 @@ const MUMBAI_LAT = 19.0760;
 const MUMBAI_LNG = 72.8777;
 const MUMBAI_TZ = 5.5;
 
+// Firebase Configuration (Using your existing project config)
+const firebaseConfig = {
+    apiKey: "AIzaSyB7YJYlnqqbV17qhBLfnIWkw0Rl507HTeM",
+    authDomain: "managment-48849.firebaseapp.com",
+    projectId: "managment-48849",
+    storageBucket: "managment-48849.firebasestorage.app",
+    messagingSenderId: "442481227799",
+    appId: "1:442481227799:web:913f767e23d00805c6c452"
+};
+
+// Initialize Firebase
+if (typeof firebase !== 'undefined') {
+    firebase.initializeApp(firebaseConfig);
+    var db = firebase.firestore();
+    // Enable offline persistence
+    db.enablePersistence().catch((err) => {
+        console.warn("Persistence failed", err.code);
+    });
+}
+
 const monthSelect = document.getElementById('month-select');
 const yearSelect = document.getElementById('year-select');
 const displayMonthYear = document.getElementById('display-month-year');
@@ -325,12 +345,32 @@ function updatePrayerTimes() {
 
     // Check for manual overrides in localStorage
     const dateKey = selectedDate.toISOString().split('T')[0];
-    const overrides = JSON.parse(localStorage.getItem(`prayer_overrides_${dateKey}`) || '{}');
+    const localOverrides = JSON.parse(localStorage.getItem(`prayer_overrides_${dateKey}`) || '{}');
 
-    ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].forEach(key => {
-        const el = document.getElementById(`time-${key}`);
-        el.textContent = overrides[key] || times[key];
-    });
+    // UI Update Helper
+    const applyTimes = (data) => {
+        ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].forEach(key => {
+            const el = document.getElementById(`time-${key}`);
+            el.textContent = data[key] || times[key];
+        });
+    };
+
+    // First apply local/fallback
+    applyTimes(localOverrides);
+
+    // Then try to fetch from Firebase
+    if (typeof db !== 'undefined') {
+        db.collection("prayer_times").doc(dateKey).get().then((doc) => {
+            if (doc.exists) {
+                const firebaseOverrides = doc.data();
+                // Update local storage to match cloud
+                localStorage.setItem(`prayer_overrides_${dateKey}`, JSON.stringify(firebaseOverrides));
+                applyTimes(firebaseOverrides);
+            }
+        }).catch((error) => {
+            console.error("Error fetching from Firebase:", error);
+        });
+    }
 }
 
 function calculatePrayerTimes(date, lat, lng, tz, madhab) {
@@ -542,7 +582,16 @@ pickerSave.addEventListener('click', () => {
     const dateKey = selectedDate.toISOString().split('T')[0];
     const overrides = JSON.parse(localStorage.getItem(`prayer_overrides_${dateKey}`) || '{}');
     overrides[activeEditKey] = finalTime;
+
+    // Update Local Storage
     localStorage.setItem(`prayer_overrides_${dateKey}`, JSON.stringify(overrides));
+
+    // Update Firebase
+    if (typeof db !== 'undefined') {
+        db.collection("prayer_times").doc(dateKey).set(overrides, { merge: true })
+            .then(() => console.log("Success syncing with Cloud"))
+            .catch((err) => console.error("Cloud sync failed", err));
+    }
 
     updatePrayerTimes();
     timePickerModal.classList.remove('active');
