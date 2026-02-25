@@ -90,18 +90,18 @@
                         </div>
                     </div>
                     <div class="namaz-grid" id="namaz-grid">
-                        <div class="namaz-item"><span>Fajr</span><strong id="time-fajr" contenteditable="true"
-                                data-key="fajr">--:--</strong></div>
-                        <div class="namaz-item"><span>Sunrise</span><strong id="time-sunrise" contenteditable="true"
+                        <div class="namaz-item"><span>Fajr</span><strong id="time-fajr" data-key="fajr">--:--</strong>
+                        </div>
+                        <div class="namaz-item"><span>Sunrise</span><strong id="time-sunrise"
                                 data-key="sunrise">--:--</strong></div>
-                        <div class="namaz-item"><span>Dhuhr</span><strong id="time-dhuhr" contenteditable="true"
+                        <div class="namaz-item"><span>Dhuhr</span><strong id="time-dhuhr"
                                 data-key="dhuhr">--:--</strong></div>
-                        <div class="namaz-item"><span>Asr</span><strong id="time-asr" contenteditable="true"
-                                data-key="asr">--:--</strong></div>
-                        <div class="namaz-item"><span>Maghrib</span><strong id="time-maghrib" contenteditable="true"
+                        <div class="namaz-item"><span>Asr</span><strong id="time-asr" data-key="asr">--:--</strong>
+                        </div>
+                        <div class="namaz-item"><span>Maghrib</span><strong id="time-maghrib"
                                 data-key="maghrib">--:--</strong></div>
-                        <div class="namaz-item"><span>Isha</span><strong id="time-isha" contenteditable="true"
-                                data-key="isha">--:--</strong></div>
+                        <div class="namaz-item"><span>Isha</span><strong id="time-isha" data-key="isha">--:--</strong>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -114,6 +114,25 @@
                 <span class="insta-icon">📸</span> @arbaz_gazge
             </a>
         </section>
+    </div>
+
+    <div id="time-picker-modal" class="modal">
+        <div class="modal-content">
+            <h4 id="picker-title">Fajr Time</h4>
+            <div class="picker-inputs">
+                <input type="number" id="picker-hour" min="1" max="12" value="05">
+                <span>:</span>
+                <input type="number" id="picker-min" min="0" max="59" value="30">
+                <select id="picker-period">
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button id="picker-cancel" class="modal-btn secondary">Cancel</button>
+                <button id="picker-save" class="modal-btn primary">Save</button>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>

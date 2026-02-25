@@ -500,24 +500,56 @@ shafaiBtn.addEventListener('click', () => {
     updatePrayerTimes();
 });
 
-// Manual Edits Event Listeners
+const timePickerModal = document.getElementById('time-picker-modal');
+const pickerHour = document.getElementById('picker-hour');
+const pickerMin = document.getElementById('picker-min');
+const pickerPeriod = document.getElementById('picker-period');
+const pickerTitle = document.getElementById('picker-title');
+const pickerSave = document.getElementById('picker-save');
+const pickerCancel = document.getElementById('picker-cancel');
+
+let activeEditKey = null;
+
+// Manual Edits Logic
 document.querySelectorAll('.namaz-item strong').forEach(el => {
-    el.addEventListener('blur', (e) => {
+    el.removeAttribute('contenteditable'); // Disable old method
+    el.addEventListener('click', (e) => {
         const key = e.target.getAttribute('data-key');
-        const val = e.target.textContent.trim();
-        const dateKey = selectedDate.toISOString().split('T')[0];
+        const currentTime = e.target.textContent;
+        activeEditKey = key;
 
-        const overrides = JSON.parse(localStorage.getItem(`prayer_overrides_${dateKey}`) || '{}');
-        overrides[key] = val;
-        localStorage.setItem(`prayer_overrides_${dateKey}`, JSON.stringify(overrides));
-    });
+        // Parse current time to populate picker
+        const [timePart, period] = currentTime.split(' ');
+        const [h, m] = timePart.split(':');
 
-    el.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            el.blur();
-        }
+        pickerHour.value = h.padStart(2, '0');
+        pickerMin.value = m.padStart(2, '0');
+        pickerPeriod.value = period;
+        pickerTitle.textContent = `${key.toUpperCase()} Time`;
+
+        timePickerModal.classList.add('active');
     });
+});
+
+pickerSave.addEventListener('click', () => {
+    if (!activeEditKey) return;
+
+    const h = pickerHour.value.padStart(2, '0');
+    const m = pickerMin.value.padStart(2, '0');
+    const p = pickerPeriod.value;
+    const finalTime = `${parseInt(h)}:${m} ${p}`;
+
+    const dateKey = selectedDate.toISOString().split('T')[0];
+    const overrides = JSON.parse(localStorage.getItem(`prayer_overrides_${dateKey}`) || '{}');
+    overrides[activeEditKey] = finalTime;
+    localStorage.setItem(`prayer_overrides_${dateKey}`, JSON.stringify(overrides));
+
+    updatePrayerTimes();
+    timePickerModal.classList.remove('active');
+});
+
+pickerCancel.addEventListener('click', () => {
+    timePickerModal.classList.remove('active');
 });
 
 // Initialize
