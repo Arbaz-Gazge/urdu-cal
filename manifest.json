@@ -1,0 +1,17 @@
+{
+    "name": "Urdu Calendar 100 Years",
+    "short_name": "UrduCal",
+    "description": "Premium 100-year Urdu Calendar with Indian Festivals",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#064e3b",
+    "theme_color": "#064e3b",
+    "icons": [
+        {
+            "src": "bg.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

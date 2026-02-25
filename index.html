@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>100 Year Urdu Calendar | اردو کیلنڈر</title>
+    <meta name="description"
+        content="A beautiful and interactive 100-year calendar with Urdu localization and modern design.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#064e3b">
+    <link rel="apple-touch-icon" href="bg.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap"
+        rel="stylesheet">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js');
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1 id="main-title">Urdu Calendar</h1>
+                <p id="sub-title">100 Years Exploration (1950 - 2050)</p>
+            </div>
+            <div class="controls">
+                <select id="month-select" class="select-input"></select>
+                <select id="year-select" class="select-input"></select>
+                <button id="today-btn">Today</button>
+                <button id="lang-toggle">English / اردو</button>
+            </div>
+        </header>
+
+        <main class="calendar-card">
+            <div class="calendar-header">
+                <button id="prev-month" class="nav-btn">&lsaquo;</button>
+                <div class="current-view">
+                    <h2 id="display-month-year">March 2026</h2>
+                </div>
+                <button id="next-month" class="nav-btn">&rsaquo;</button>
+            </div>
+
+            <div class="weekday-grid" id="weekday-grid">
+                <!-- Days will be injected here -->
+            </div>
+
+            <div class="days-grid" id="days-grid">
+                <!-- Monthly days will be injected here -->
+            </div>
+
+            <div class="calendar-legend">
+                <div class="legend-item">
+                    <span class="dot today-dot"></span>
+                    <span class="legend-text" data-en="Today" data-ur="آج">Today</span>
+                </div>
+                <div class="legend-item">
+                    <span class="dot fest-dot-legend"></span>
+                    <span class="legend-text" data-en="Festival" data-ur="تہوار">Festival</span>
+                </div>
+            </div>
+        </main>
+
+        <footer class="side-info">
+            <div class="date-details" id="selected-date-info">
+                <h3 id="current-day-name">Wednesday</h3>
+                <p id="current-full-date">February 25, 2026</p>
+                <div class="hijri-box">
+                    <span class="label">Hijri:</span>
+                    <span id="hijri-date">8 Ramadan 1447</span>
+                </div>
+                <div class="festival-box" id="festival-display">
+                    <!-- Festivals will appear here -->
+                </div>
+
+                <div class="namaz-container">
+                    <div class="namaz-header">
+                        <span data-en="Prayer Times (Mumbai)" data-ur="نماز کا وقت (ممبئی)">Prayer Times (Mumbai)</span>
+                        <div class="madhab-toggle">
+                            <button id="hanafi-btn" class="mini-btn active">Hanafi</button>
+                            <button id="shafai-btn" class="mini-btn">Shafai</button>
+                        </div>
+                    </div>
+                    <div class="namaz-grid" id="namaz-grid">
+                        <div class="namaz-item"><span>Fajr</span><strong id="time-fajr" contenteditable="true"
+                                data-key="fajr">--:--</strong></div>
+                        <div class="namaz-item"><span>Sunrise</span><strong id="time-sunrise" contenteditable="true"
+                                data-key="sunrise">--:--</strong></div>
+                        <div class="namaz-item"><span>Dhuhr</span><strong id="time-dhuhr" contenteditable="true"
+                                data-key="dhuhr">--:--</strong></div>
+                        <div class="namaz-item"><span>Asr</span><strong id="time-asr" contenteditable="true"
+                                data-key="asr">--:--</strong></div>
+                        <div class="namaz-item"><span>Maghrib</span><strong id="time-maghrib" contenteditable="true"
+                                data-key="maghrib">--:--</strong></div>
+                        <div class="namaz-item"><span>Isha</span><strong id="time-isha" contenteditable="true"
+                                data-key="isha">--:--</strong></div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <section class="about-section">
+            <p data-en="Developed by" data-ur="تیار کردہ">Developed by</p>
+            <h3>Arbaz Gazge</h3>
+            <a href="https://instagram.com/arbaz_gazge" target="_blank" class="insta-link">
+                <span class="insta-icon">📸</span> @arbaz_gazge
+            </a>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
