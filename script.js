@@ -23,6 +23,8 @@ let currentLang = 'en';
 let selectedDate = new Date();
 let currentViewDate = new Date();
 let currentMadhab = 'hanafi'; // 'hanafi' or 'shafai'
+let tasksCache = {};
+let allSurahs = [];
 
 const MUMBAI_LAT = 19.0760;
 const MUMBAI_LNG = 72.8777;
@@ -40,9 +42,16 @@ const firebaseConfig = {
 
 const fbStatusEl = document.getElementById('fb-status');
 
+// Pre-initialize status to offline if connected
+if (fbStatusEl) {
+    fbStatusEl.classList.add('offline');
+}
+
 function setCloudStatus(state) {
+    if (!fbStatusEl) return;
     fbStatusEl.classList.remove('online', 'offline', 'error');
     if (state) fbStatusEl.classList.add(state);
+    console.log(`Cloud state: ${state}`);
 }
 
 // Initialize Firebase
@@ -88,7 +97,6 @@ if (typeof firebase !== 'undefined') {
 } else {
     console.error("Firebase SDK not found!");
 }
-let tasksCache = {};
 const taskModal = document.getElementById('task-modal');
 const taskInput = document.getElementById('task-input');
 const taskSave = document.getElementById('task-save');
@@ -109,7 +117,8 @@ const surahContent = document.getElementById('surah-content');
 const readerSurahName = document.getElementById('reader-surah-name');
 const closeReader = document.getElementById('close-reader');
 
-let allSurahs = [];
+
+
 
 const monthSelect = document.getElementById('month-select');
 const yearSelect = document.getElementById('year-select');
