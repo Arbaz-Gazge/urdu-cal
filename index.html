@@ -50,9 +50,13 @@
                 <button id="today-btn">Today</button>
                 <button id="lang-toggle">English / اردو</button>
             </div>
+            <nav class="main-nav">
+                <button id="nav-calendar" class="nav-item active" data-en="Calendar" data-ur="کیلنڈر">Calendar</button>
+                <button id="nav-quran" class="nav-item" data-en="Quran" data-ur="قرآن">Quran</button>
+            </nav>
         </header>
 
-        <main class="calendar-card">
+        <main id="calendar-view" class="calendar-card">
             <div class="calendar-header">
                 <button id="prev-month" class="nav-btn">&lsaquo;</button>
                 <div class="current-view">
@@ -77,6 +81,22 @@
                 <div class="legend-item">
                     <span class="dot fest-dot-legend"></span>
                     <span class="legend-text" data-en="Festival" data-ur="تہوار">Festival</span>
+                </div>
+            </div>
+        </main>
+
+        <main id="quran-view" class="calendar-card hidden">
+            <div class="quran-header">
+                <h2 data-en="Holy Quran" data-ur="قرآن مجید">Holy Quran</h2>
+                <div class="quran-search">
+                    <input type="text" id="surah-search" placeholder="Search Surah..." data-en="Search Surah..."
+                        data-ur="سورہ تلاش کریں...">
+                </div>
+            </div>
+            <div id="surah-list" class="surah-list">
+                <!-- Surahs will be loaded here -->
+                <div class="loader-container">
+                    <div class="spinner"></div>
                 </div>
             </div>
         </main>
@@ -167,6 +187,18 @@
             <div class="modal-actions">
                 <button id="task-cancel" class="modal-btn secondary">Cancel</button>
                 <button id="task-save" class="modal-btn primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="surah-reader-modal" class="modal">
+        <div class="modal-content surah-modal-content">
+            <div class="surah-reader-header">
+                <button id="close-reader" class="close-btn">&lsaquo; Back</button>
+                <h3 id="reader-surah-name">Surah Name</h3>
+            </div>
+            <div id="surah-content" class="surah-content">
+                <!-- Ayahs will be loaded here -->
             </div>
         </div>
     </div>

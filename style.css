@@ -10,6 +10,7 @@
     --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     --border-radius: 20px;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --quran-arabic: 'Noto Naskh Arabic', serif;
 }
 
 * {
@@ -106,6 +107,38 @@ body::before {
     flex-direction: column;
     gap: 1.5rem;
     margin: auto;
+    min-height: 90vh;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.main-nav {
+    display: flex;
+    background: #f1f5f9;
+    padding: 4px;
+    border-radius: 12px;
+    margin-top: 1rem;
+}
+
+.nav-item {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0.6rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.nav-item.active {
+    background: white;
+    color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 header {
@@ -808,4 +841,157 @@ button:active {
 [dir="rtl"] .weekday-grid,
 [dir="rtl"] .days-grid {
     direction: rtl;
+}
+
+/* Quran Specific Styles */
+.quran-header {
+    margin-bottom: 1.5rem;
+}
+
+.quran-search input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    outline: none;
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+}
+
+.surah-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.surah-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.surah-item:hover {
+    background: #f1f5f9;
+}
+
+.surah-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.surah-num {
+    width: 35px;
+    height: 35px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.surah-name-en {
+    font-weight: 600;
+}
+
+.surah-name-ar {
+    font-family: var(--quran-arabic);
+    font-size: 1.25rem;
+    color: var(--primary-color);
+}
+
+.surah-modal-content {
+    max-width: 600px;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+}
+
+.surah-reader-header {
+    padding: 1rem;
+    background: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.close-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.surah-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    background: #fff;
+}
+
+.ayah-box {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: right;
+}
+
+.ayah-ar {
+    font-family: var(--quran-arabic);
+    font-size: 1.75rem;
+    line-height: 2.5;
+    margin-bottom: 1rem;
+    color: #1a202c;
+    display: block;
+}
+
+.ayah-ur {
+    font-family: 'Noto Nastaliq Urdu', serif;
+    font-size: 1.2rem;
+    line-height: 2.2;
+    color: #4a5568;
+    display: block;
+    direction: rtl;
+}
+
+.ayah-num-badge {
+    display: inline-flex;
+    width: 28px;
+    height: 28px;
+    background: #e2e8f0;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    margin-right: 10px;
+    color: var(--text-muted);
+}
+
+.loader-container {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.bismillah {
+    text-align: center;
+    font-family: var(--quran-arabic);
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: var(--primary-color);
 }

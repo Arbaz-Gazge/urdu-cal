@@ -97,6 +97,20 @@ const tasksList = document.getElementById('tasks-list');
 const tasksTitle = document.getElementById('tasks-title');
 const addTaskTrigger = document.getElementById('add-task-trigger');
 
+// Quran View Elements
+const navCalendar = document.getElementById('nav-calendar');
+const navQuran = document.getElementById('nav-quran');
+const calendarView = document.getElementById('calendar-view');
+const quranView = document.getElementById('quran-view');
+const surahListContainer = document.getElementById('surah-list');
+const surahSearch = document.getElementById('surah-search');
+const surahReaderModal = document.getElementById('surah-reader-modal');
+const surahContent = document.getElementById('surah-content');
+const readerSurahName = document.getElementById('reader-surah-name');
+const closeReader = document.getElementById('close-reader');
+
+let allSurahs = [];
+
 const monthSelect = document.getElementById('month-select');
 const yearSelect = document.getElementById('year-select');
 const displayMonthYear = document.getElementById('display-month-year');
@@ -802,3 +816,110 @@ initSelectors();
 updateCalendar();
 updateSideInfo();
 updatePrayerTimes();
+
+// --- Quran Logic ---
+
+function showView(view) {
+    calendarView.classList.add('hidden');
+    quranView.classList.add('hidden');
+    navCalendar.classList.remove('active');
+    navQuran.classList.remove('active');
+
+    if (view === 'calendar') {
+        calendarView.classList.remove('hidden');
+        navCalendar.classList.add('active');
+    } else {
+        quranView.classList.remove('hidden');
+        navQuran.classList.add('active');
+        if (allSurahs.length === 0) loadSurahList();
+    }
+}
+
+navCalendar.addEventListener('click', () => showView('calendar'));
+navQuran.addEventListener('click', () => showView('quran'));
+
+async function loadSurahList() {
+    try {
+        const res = await fetch('https://api.alquran.cloud/v1/surah');
+        const data = await res.json();
+        allSurahs = data.data;
+        displaySurahs(allSurahs);
+    } catch (err) {
+        surahListContainer.innerHTML = '<p class="error">Failed to load Surahs.</p>';
+    }
+}
+
+function displaySurahs(surahs) {
+    surahListContainer.innerHTML = '';
+    surahs.forEach(s => {
+        const item = document.createElement('div');
+        item.className = 'surah-item';
+        item.innerHTML = `
+            <div class="surah-info">
+                <div class="surah-num">${s.number}</div>
+                <div class="surah-name-en">${s.englishName}</div>
+            </div>
+            <div class="surah-name-ar">${s.name}</div>
+        `;
+        item.onclick = () => loadSurahContent(s.number, s.englishName);
+        surahListContainer.appendChild(item);
+    });
+}
+
+surahSearch.addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase();
+    const filtered = allSurahs.filter(s =>
+        s.englishName.toLowerCase().includes(term) ||
+        s.number.toString().includes(term)
+    );
+    displaySurahs(filtered);
+});
+
+async function loadSurahContent(surahNum, name) {
+    readerSurahName.textContent = name;
+    surahContent.innerHTML = '<div class="loader-container"><div class="spinner"></div></div>';
+    surahReaderModal.classList.add('active');
+
+    try {
+        // Fetch Arabic
+        const resAr = await fetch(`https://api.alquran.cloud/v1/surah/${surahNum}`);
+        const dataAr = await resAr.json();
+
+        // Fetch Urdu Translation (Fateh Muhammad Jalandhari)
+        const resUr = await fetch(`https://api.alquran.cloud/v1/surah/${surahNum}/ur.jalandhry`);
+        const dataUr = await resUr.json();
+
+        const ayahsAr = dataAr.data.ayahs;
+        const ayahsUr = dataUr.data.ayahs;
+
+        surahContent.innerHTML = '';
+
+        // Bismillah handling (except Surah Fatiha and Surah Tauba)
+        if (surahNum !== 1 && surahNum !== 9) {
+            const bismillah = document.createElement('div');
+            bismillah.className = 'bismillah';
+            bismillah.textContent = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ';
+            surahContent.appendChild(bismillah);
+        }
+
+        ayahsAr.forEach((ayah, i) => {
+            let textAr = ayah.text;
+            // Remove Bismillah from first ayah if not Surah 1
+            if (i === 0 && surahNum !== 1 && textAr.includes('بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ')) {
+                textAr = textAr.replace('بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ', '').trim();
+            }
+
+            const box = document.createElement('div');
+            box.className = 'ayah-box';
+            box.innerHTML = `
+                <span class="ayah-ar">${textAr} <span class="ayah-num-badge">${ayah.numberInSurah}</span></span>
+                <span class="ayah-ur">${ayahsUr[i].text}</span>
+            `;
+            surahContent.appendChild(box);
+        });
+    } catch (err) {
+        surahContent.innerHTML = '<p class="error">Failed to load content.</p>';
+    }
+}
+
+closeReader.onclick = () => surahReaderModal.classList.remove('active');
