@@ -117,6 +117,16 @@ const surahContent = document.getElementById('surah-content');
 const readerSurahName = document.getElementById('reader-surah-name');
 const closeReader = document.getElementById('close-reader');
 
+// Quran Bookmark Elements
+const quranTabSurahs = document.getElementById('quran-tab-surahs');
+const quranTabBookmarks = document.getElementById('quran-tab-bookmarks');
+const surahListView = document.getElementById('surah-list-view');
+const bookmarksView = document.getElementById('bookmarks-view');
+const bookmarksList = document.getElementById('bookmarks-list');
+const quranSearchContainer = document.getElementById('quran-search-container');
+
+let bookmarks = JSON.parse(localStorage.getItem('quran_bookmarks') || '[]');
+
 
 
 
@@ -890,20 +900,15 @@ async function loadSurahContent(surahNum, name) {
     surahReaderModal.classList.add('active');
 
     try {
-        // Fetch Arabic
         const resAr = await fetch(`https://api.alquran.cloud/v1/surah/${surahNum}`);
         const dataAr = await resAr.json();
-
-        // Fetch Urdu Translation (Fateh Muhammad Jalandhari)
         const resUr = await fetch(`https://api.alquran.cloud/v1/surah/${surahNum}/ur.jalandhry`);
         const dataUr = await resUr.json();
 
         const ayahsAr = dataAr.data.ayahs;
         const ayahsUr = dataUr.data.ayahs;
-
         surahContent.innerHTML = '';
 
-        // Bismillah handling (except Surah Fatiha and Surah Tauba)
         if (surahNum !== 1 && surahNum !== 9) {
             const bismillah = document.createElement('div');
             bismillah.className = 'bismillah';
@@ -913,16 +918,26 @@ async function loadSurahContent(surahNum, name) {
 
         ayahsAr.forEach((ayah, i) => {
             let textAr = ayah.text;
-            // Remove Bismillah from first ayah if not Surah 1
             if (i === 0 && surahNum !== 1 && textAr.includes('بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ')) {
                 textAr = textAr.replace('بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ', '').trim();
             }
+
+            const ayahId = `${surahNum}:${ayah.numberInSurah}`;
+            const isBookmarked = bookmarks.some(b => b.id === ayahId);
 
             const box = document.createElement('div');
             box.className = 'ayah-box';
             box.innerHTML = `
                 <span class="ayah-ar">${textAr} <span class="ayah-num-badge">${ayah.numberInSurah}</span></span>
                 <span class="ayah-ur">${ayahsUr[i].text}</span>
+                <div class="ayah-actions">
+                    <button class="ayah-btn ${isBookmarked ? 'bookmarked' : ''}" data-id="${ayahId}" onclick="event.stopPropagation(); toggleBookmark(${surahNum}, '${name}', ${ayah.numberInSurah}, \`${textAr.replace(/`/g, '\\`')}\`, \`${ayahsUr[i].text.replace(/`/g, '\\`')}\`)">
+                        🔖 <span data-en="Bookmark" data-ur="بک مارک">Bookmark</span>
+                    </button>
+                    <button class="ayah-btn" onclick="copyAyah(\`${textAr.replace(/`/g, '\\`')}\`, \`${ayahsUr[i].text.replace(/`/g, '\\`')}\`)">
+                        📋 <span data-en="Copy" data-ur="کاپی">Copy</span>
+                    </button>
+                </div>
             `;
             surahContent.appendChild(box);
         });
@@ -931,4 +946,84 @@ async function loadSurahContent(surahNum, name) {
     }
 }
 
+window.copyAyah = function (ar, ur) {
+    const text = `${ar}\n\n${ur}`;
+    navigator.clipboard.writeText(text).then(() => {
+        alert("Ayah copied to clipboard!");
+    });
+};
+
 closeReader.onclick = () => surahReaderModal.classList.remove('active');
+
+// --- Quran Bookmark Logic ---
+
+function toggleQuranTab(tab) {
+    quranTabSurahs.classList.toggle('active', tab === 'surahs');
+    quranTabBookmarks.classList.toggle('active', tab === 'bookmarks');
+    surahListView.classList.toggle('hidden', tab !== 'surahs');
+    bookmarksView.classList.toggle('hidden', tab !== 'bookmarks');
+    quranSearchContainer.classList.toggle('hidden', tab !== 'surahs');
+
+    if (tab === 'bookmarks') displayBookmarks();
+}
+
+quranTabSurahs.onclick = () => toggleQuranTab('surahs');
+quranTabBookmarks.onclick = () => toggleQuranTab('bookmarks');
+
+window.toggleBookmark = function (surahNum, surahName, ayahNum, textAr, textUr) {
+    const id = `${surahNum}:${ayahNum}`;
+    const index = bookmarks.findIndex(b => b.id === id);
+
+    if (index > -1) {
+        bookmarks.splice(index, 1);
+    } else {
+        bookmarks.push({ id, surahNum, surahName, ayahNum, textAr, textUr });
+    }
+
+    localStorage.setItem('quran_bookmarks', JSON.stringify(bookmarks));
+    // Update UI if list is open
+    if (surahReaderModal.classList.contains('active')) {
+        const btn = document.querySelector(`.ayah-btn[data-id="${id}"]`);
+        if (btn) btn.classList.toggle('bookmarked');
+    }
+}
+
+function displayBookmarks() {
+    bookmarksList.innerHTML = '';
+    if (bookmarks.length === 0) {
+        bookmarksList.innerHTML = '<p class="no-tasks">No bookmarks yet.</p>';
+        return;
+    }
+
+    bookmarks.forEach((b, i) => {
+        const item = document.createElement('div');
+        item.className = 'bookmark-item';
+        item.innerHTML = `
+            <div class="bookmark-info">
+                <div class="bookmark-title">${b.surahName} - Ayah ${b.ayahNum}</div>
+                <div class="bookmark-subtitle" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${b.textUr}</div>
+            </div>
+            <button class="remove-bookmark-btn" onclick="removeBookmark(${i})">🗑️</button>
+        `;
+        // Make entire item clickable to view
+        item.onclick = (e) => {
+            if (e.target.tagName !== 'BUTTON') {
+                viewBookmark(b);
+            }
+        };
+        bookmarksList.appendChild(item);
+    });
+}
+
+window.removeBookmark = function (index) {
+    bookmarks.splice(index, 1);
+    localStorage.setItem('quran_bookmarks', JSON.stringify(bookmarks));
+    displayBookmarks();
+};
+
+function viewBookmark(b) {
+    loadSurahContent(b.surahNum, b.surahName);
+    // Future improvement: auto-scroll to ayah
+}
+
+
