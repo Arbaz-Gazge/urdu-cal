@@ -10,7 +10,7 @@
     --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     --border-radius: 20px;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --quran-arabic: 'Noto Naskh Arabic', serif;
+    --quran-arabic: 'Amiri', 'Scheherazade New', serif;
 }
 
 * {
@@ -946,27 +946,35 @@ button:active {
 
 .ayah-box {
     margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #f1f5f9;
+    padding: 1.5rem;
+    background: #fdfdfd;
+    border: 1px solid #f1f5f9;
+    border-radius: 12px;
     text-align: right;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .ayah-ar {
     font-family: var(--quran-arabic);
-    font-size: 1.75rem;
-    line-height: 2.5;
-    margin-bottom: 1rem;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 2.8;
+    margin-bottom: 1.2rem;
     color: #1a202c;
     display: block;
+    direction: rtl;
 }
 
 .ayah-ur {
     font-family: 'Noto Nastaliq Urdu', serif;
-    font-size: 1.2rem;
-    line-height: 2.2;
-    color: #4a5568;
+    font-size: 1.25rem;
+    line-height: 2.4;
+    color: #374151;
     display: block;
     direction: rtl;
+    padding: 0.5rem;
+    background: rgba(6, 78, 59, 0.03);
+    border-right: 3px solid var(--primary-color);
 }
 
 .ayah-num-badge {
