@@ -7,7 +7,7 @@
     <title>100 Year Urdu Calendar | اردو کیلنڈر</title>
     <meta name="description"
         content="A beautiful and interactive 100-year calendar with Urdu localization and modern design.">
-    <link rel="stylesheet" href="style.css?v=7">
+    <link rel="stylesheet" href="style.css?v=8">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#064e3b">
     <link rel="icon" type="image/png" href="icon.png">
@@ -95,6 +95,16 @@
                     <button id="quran-tab-bookmarks" class="quran-tab" data-en="Bookmarks"
                         data-ur="بک مارکس">Bookmarks</button>
                 </div>
+
+                <div id="resume-container" class="resume-box hidden">
+                    <div class="resume-info">
+                        <span class="resume-label" data-en="Continue Reading" data-ur="پڑھنا جاری رکھیں">Continue
+                            Reading</span>
+                        <div id="resume-details" class="resume-details">--</div>
+                    </div>
+                    <button id="resume-btn" class="resume-action-btn">➔</button>
+                </div>
+
                 <div id="quran-search-container" class="quran-search">
                     <input type="text" id="surah-search" placeholder="Search Surah..." data-en="Search Surah..."
                         data-ur="سورہ تلاش کریں...">
@@ -217,7 +227,7 @@
         </div>
     </div>
 
-    <script src="script.js?v=7"></script>
+    <script src="script.js?v=8"></script>
 </body>
 
 </html>

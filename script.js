@@ -124,8 +124,12 @@ const surahListView = document.getElementById('surah-list-view');
 const bookmarksView = document.getElementById('bookmarks-view');
 const bookmarksList = document.getElementById('bookmarks-list');
 const quranSearchContainer = document.getElementById('quran-search-container');
+const resumeContainer = document.getElementById('resume-container');
+const resumeDetails = document.getElementById('resume-details');
+const resumeBtn = document.getElementById('resume-btn');
 
 let bookmarks = JSON.parse(localStorage.getItem('quran_bookmarks') || '[]');
+let lastRead = JSON.parse(localStorage.getItem('last_read') || 'null');
 
 
 
@@ -894,7 +898,7 @@ surahSearch.addEventListener('input', (e) => {
     displaySurahs(filtered);
 });
 
-async function loadSurahContent(surahNum, name) {
+async function loadSurahContent(surahNum, name, scrollToAyah = null) {
     readerSurahName.textContent = name;
     surahContent.innerHTML = '<div class="loader-container"><div class="spinner"></div></div>';
     surahReaderModal.classList.add('active');
@@ -927,11 +931,15 @@ async function loadSurahContent(surahNum, name) {
 
             const box = document.createElement('div');
             box.className = 'ayah-box';
+            box.id = `ayah-${ayah.numberInSurah}`;
             box.innerHTML = `
                 <span class="ayah-ar">${textAr} <span class="ayah-num-badge">${ayah.numberInSurah}</span></span>
                 <span class="ayah-ur">${ayahsUr[i].text}</span>
                 <div class="ayah-actions">
-                    <button class="ayah-btn ${isBookmarked ? 'bookmarked' : ''}" data-id="${ayahId}" onclick="event.stopPropagation(); toggleBookmark(${surahNum}, '${name}', ${ayah.numberInSurah}, \`${textAr.replace(/`/g, '\\`')}\`, \`${ayahsUr[i].text.replace(/`/g, '\\`')}\`)">
+                    <button class="ayah-btn" onclick="saveLastRead(${surahNum}, '${name.replace(/'/g, "\\'")}', ${ayah.numberInSurah})">
+                        📍 <span data-en="Stop Here" data-ur="یہاں رکیں">Stop Here</span>
+                    </button>
+                    <button class="ayah-btn ${isBookmarked ? 'bookmarked' : ''}" data-id="${ayahId}" onclick="event.stopPropagation(); toggleBookmark(${surahNum}, '${name.replace(/'/g, "\\'")}', ${ayah.numberInSurah}, \`${textAr.replace(/`/g, '\\`')}\`, \`${ayahsUr[i].text.replace(/`/g, '\\`')}\`)">
                         🔖 <span data-en="Bookmark" data-ur="بک مارک">Bookmark</span>
                     </button>
                     <button class="ayah-btn" onclick="copyAyah(\`${textAr.replace(/`/g, '\\`')}\`, \`${ayahsUr[i].text.replace(/`/g, '\\`')}\`)">
@@ -941,6 +949,17 @@ async function loadSurahContent(surahNum, name) {
             `;
             surahContent.appendChild(box);
         });
+
+        if (scrollToAyah) {
+            setTimeout(() => {
+                const target = document.getElementById(`ayah-${scrollToAyah}`);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    target.style.background = '#fffbeb';
+                    setTimeout(() => target.style.background = '#fdfdfd', 3000);
+                }
+            }, 500);
+        }
     } catch (err) {
         surahContent.innerHTML = '<p class="error">Failed to load content.</p>';
     }
@@ -1021,9 +1040,35 @@ window.removeBookmark = function (index) {
     displayBookmarks();
 };
 
-function viewBookmark(b) {
-    loadSurahContent(b.surahNum, b.surahName);
-    // Future improvement: auto-scroll to ayah
+window.saveLastRead = function (surahNum, surahName, ayahNum) {
+    lastRead = { surahNum, surahName, ayahNum };
+    localStorage.setItem('last_read', JSON.stringify(lastRead));
+    updateResumeUI();
+    alert(`Progress saved: ${surahName} - Ayah ${ayahNum}`);
+};
+
+function updateResumeUI() {
+    if (lastRead && resumeContainer && resumeDetails) {
+        resumeContainer.classList.remove('hidden');
+        resumeDetails.textContent = `${lastRead.surahName}, Ayah ${lastRead.ayahNum}`;
+    } else if (resumeContainer) {
+        resumeContainer.classList.add('hidden');
+    }
 }
+
+if (resumeBtn) {
+    resumeBtn.onclick = () => {
+        if (lastRead) {
+            loadSurahContent(lastRead.surahNum, lastRead.surahName, lastRead.ayahNum);
+        }
+    };
+}
+
+function viewBookmark(b) {
+    loadSurahContent(b.surahNum, b.surahName, b.ayahNum);
+}
+
+// Initial UI Update
+updateResumeUI();
 
 
