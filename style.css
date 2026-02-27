@@ -1,3 +1,12 @@
+@font-face {
+    font-family: 'Almushaf';
+    src: url('https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/fonts/almushaf.woff2') format('woff2'),
+        url('https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/fonts/almushaf.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
     --primary-color: #064e3b;
     /* Deep Emerald */
@@ -10,7 +19,7 @@
     --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     --border-radius: 20px;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --quran-arabic: 'Amiri', 'Scheherazade New', serif;
+    --quran-arabic: 'Almushaf', 'Amiri', 'Scheherazade New', serif;
 }
 
 * {
